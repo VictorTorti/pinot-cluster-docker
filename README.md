@@ -17,6 +17,8 @@ Deploy the cluster using the command:
 docker-compose up -d
 ```
 
+Once all services are up, navigate to Apache Pinot controller in [http://localhost:9001](http://localhost:9001). 
+
 ## Ingest sample data
 
 To ingest the `tracks.csv` dataset, please run the following commands.
@@ -45,6 +47,8 @@ docker exec -it pinot-controller-1-1 \
     /opt/pinot/bin/pinot-admin.sh LaunchDataIngestionJob \
     -jobSpecFile /tmp/definitions/tracks_job_spec.yml
 ```
+
+The stored `tracks` table can be queried using Pinot's `Query Console`.
 
 ## References
 
