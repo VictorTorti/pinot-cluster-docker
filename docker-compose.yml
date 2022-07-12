@@ -1,0 +1,199 @@
+version: '3'
+
+services:
+  zookeeper-1:
+    image: zookeeper:latest
+    hostname: zookeeper-1
+    restart: "unless-stopped"
+    ports:
+      - "2181:2181"
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_PORT: 2181
+      ZOO_SERVERS: server.1=zookeeper-1:2888:3888;2181 server.2=zookeeper-2:2888:3888;2181 server.3=zookeeper-3:2888:3888;2181 
+    volumes:
+      - zkData1:/data
+      - zkCatalog1:/catalog
+    healthcheck:
+      test: nc -z localhost 2181 || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  zookeeper-2:
+    image: zookeeper:latest
+    restart: "unless-stopped"
+    hostname: zookeeper-2
+    ports:
+      - "2182:2181"
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_PORT: 2181
+      ZOO_SERVERS: server.1=zookeeper-1:2888:3888;2181 server.2=zookeeper-2:2888:3888;2181 server.3=zookeeper-3:2888:3888;2181 
+    volumes:
+      - zkData2:/data
+      - zkCatalog2:/catalog
+    healthcheck:
+      test: nc -z localhost 2181 || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  zookeeper-3:
+    image: zookeeper:latest
+    restart: "unless-stopped"
+    hostname: zookeeper-3
+    ports:
+      - "2183:2181"
+    environment:
+      ZOO_MY_ID: 3
+      ZOO_PORT: 2181
+      ZOO_SERVERS: server.1=zookeeper-1:2888:3888;2181 server.2=zookeeper-2:2888:3888;2181 server.3=zookeeper-3:2888:3888;2181 
+    volumes:
+      - zkData3:/data
+      - zkCatalog3:/catalog
+    healthcheck:
+      test: nc -z localhost 2181 || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  controller-1:
+    image: apachepinot/pinot:0.10.0
+    restart: "unless-stopped"
+    hostname: controller-1
+    volumes:
+      - pinotController1:/tmp/data/controller
+    ports:
+      - "9001:9001"
+    command: StartController -zkAddress zookeeper-1:2181,zookeeper-2:2182,zookeeper-3:2183 -clusterName PinotCluster -controllerPort 9001
+    depends_on:
+      zookeeper-1:
+        condition: service_healthy
+      zookeeper-2:
+        condition: service_healthy
+      zookeeper-3:
+        condition: service_healthy
+    healthcheck:
+      test: curl --fail -s http://controller-1:9001/ || exit 1
+      interval: 1m30s
+      timeout: 10s
+      retries: 5
+
+  controller-2:
+    image: apachepinot/pinot:0.10.0
+    restart: "unless-stopped"
+    hostname: controller-2
+    volumes:
+      - pinotController2:/tmp/data/controller
+    ports:
+      - "9002:9002"
+    command: StartController -zkAddress zookeeper-1:2181,zookeeper-2:2182,zookeeper-3:2183 -clusterName PinotCluster -controllerPort 9002
+    depends_on:
+      zookeeper-1:
+        condition: service_healthy
+      zookeeper-2:
+        condition: service_healthy
+      zookeeper-3:
+        condition: service_healthy
+      controller-1:
+        condition: service_healthy
+    healthcheck:
+      test: curl --fail -s http://controller-2:9002/ || exit 1
+      interval: 1m30s
+      timeout: 10s
+      retries: 5
+
+  broker-1:
+    image: apachepinot/pinot:0.10.0
+    restart: "unless-stopped"
+    hostname: broker-1
+    ports:
+      - "7001:7001"
+    command: StartBroker -zkAddress zookeeper-1:2181,zookeeper-2:2182,zookeeper-3:2183 -clusterName PinotCluster -brokerPort 7001
+    depends_on:
+      zookeeper-1:
+        condition: service_healthy
+      zookeeper-2:
+        condition: service_healthy
+      zookeeper-3:
+        condition: service_healthy
+      controller-1:
+        condition: service_healthy
+      controller-2:
+        condition: service_healthy
+
+  broker-2:
+    image: apachepinot/pinot:0.10.0
+    restart: "unless-stopped"
+    hostname: broker-2
+    ports:
+      - "7002:7002"
+    command: StartBroker -zkAddress zookeeper-1:2181,zookeeper-2:2182,zookeeper-3:2183 -clusterName PinotCluster -brokerPort 7002
+    depends_on:
+      zookeeper-1:
+        condition: service_healthy
+      zookeeper-2:
+        condition: service_healthy
+      zookeeper-3:
+        condition: service_healthy
+      controller-1:
+        condition: service_healthy
+      controller-2:
+        condition: service_healthy
+
+  server-1:
+    image: apachepinot/pinot:0.10.0
+    restart: "unless-stopped"
+    hostname: server-1
+    volumes:
+      - pinotServer1:/tmp/data/server
+    ports:
+      - "8001:8001"
+      - "8011:8011"
+    command: StartServer -zkAddress zookeeper-1:2181,zookeeper-2:2182,zookeeper-3:2183 -clusterName PinotCluster -serverPort 8001 -serverAdminPort 8011
+    depends_on:
+      zookeeper-1:
+        condition: service_healthy
+      zookeeper-2:
+        condition: service_healthy
+      zookeeper-3:
+        condition: service_healthy
+      controller-1:
+        condition: service_healthy
+      controller-2:
+        condition: service_healthy
+
+  server-2:
+    image: apachepinot/pinot:0.10.0
+    restart: "unless-stopped"
+    hostname: server-2
+    volumes:
+      - pinotServer2:/tmp/data/server
+    ports:
+      - "8002:8002"
+      - "8012:8012"
+    command: StartServer -zkAddress zookeeper-1:2181,zookeeper-2:2182,zookeeper-3:2183 -clusterName PinotCluster -serverPort 8002 -serverAdminPort 8012
+    depends_on:
+      zookeeper-1:
+        condition: service_healthy
+      zookeeper-2:
+        condition: service_healthy
+      zookeeper-3:
+        condition: service_healthy
+      controller-1:
+        condition: service_healthy
+      controller-2:
+        condition: service_healthy
+
+volumes:
+  zkData1:
+  zkData2:
+  zkData3:
+  zkCatalog1:
+  zkCatalog2:
+  zkCatalog3:
+  pinotController1:
+  pinotController2:
+  pinotServer1:
+  pinotServer2:

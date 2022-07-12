@@ -1,0 +1,28 @@
+{
+"schemaName": "tracks",
+"dimensionFieldSpecs": [
+    {
+    "name": "title",
+    "dataType": "STRING"
+    },
+    {
+    "name": "album",
+    "dataType": "STRING"
+    },
+    {
+    "name": "artist",
+    "dataType": "STRING"
+    },
+    {
+    "name": "duration",
+    "dataType": "STRING"
+    }
+],
+"metricFieldSpecs": [
+    {
+    "name": "popularity",
+    "dataType": "LONG"
+    }
+],
+"dateTimeFieldSpecs": []
+}

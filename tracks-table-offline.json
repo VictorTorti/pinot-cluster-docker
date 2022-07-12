@@ -1,0 +1,77 @@
+{
+  "tableName": "tracks",
+  "tableType": "OFFLINE",
+  "tenants": {
+    "broker": "DefaultTenant",
+    "server": "DefaultTenant"
+  },
+  "segmentsConfig": {
+    "schemaName": "tracks",
+    "timeColumnName": null,
+    "replication": "1",
+    "replicasPerPartition": "1",
+    "retentionTimeUnit": null,
+    "retentionTimeValue": null,
+    "segmentPushType": "APPEND",
+    "segmentPushFrequency": "HOURLY",
+    "crypterClassName": null,
+    "peerSegmentDownloadScheme": null
+  },
+  "tableIndexConfig": {
+    "loadMode": "MMAP",
+    "invertedIndexColumns": [],
+    "createInvertedIndexDuringSegmentGeneration": false,
+    "rangeIndexColumns": [],
+    "sortedColumn": [
+      "album",
+      "artist"
+    ],
+    "bloomFilterColumns": [],
+    "bloomFilterConfigs": null,
+    "noDictionaryColumns": [],
+    "onHeapDictionaryColumns": [],
+    "varLengthDictionaryColumns": [],
+    "enableDefaultStarTree": false,
+    "starTreeIndexConfigs": null,
+    "enableDynamicStarTreeCreation": false,
+    "segmentPartitionConfig": null,
+    "columnMinMaxValueGeneratorMode": null,
+    "nullHandlingEnabled": false,
+    "DictionaryColumns": [
+      "album",
+      "artist"
+    ]
+  },
+  "metadata": {},
+  "ingestionConfig": {
+    "filterConfig": null,
+    "transformConfigs": null
+  },
+  "quota": {
+    "storage": null,
+    "maxQueriesPerSecond": null
+  },
+  "task": null,
+  "routing": {
+    "segmentPrunerTypes": null,
+    "instanceSelectorType": "replicaGroup"
+  },
+  "instanceAssignmentConfigMap": {
+    "OFFLINE": {
+      "tagPoolConfig": {
+        "tag": "DefaultTenant_OFFLINE"
+      },
+      "replicaGroupPartitionConfig": {
+        "replicaGroupBased": true,
+        "numReplicaGroups": "2",
+        "numInstancesPerReplicaGroup": "1"
+      }
+    }
+  },
+  "query": {
+    "timeoutMs": null
+  },
+  "fieldConfigList": [],
+  "upsertConfig": null,
+  "tierConfigs": null
+}
