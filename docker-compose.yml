@@ -1,5 +1,7 @@
 version: '3'
 
+name: pinot
+
 services:
   zookeeper-1:
     image: zookeeper:latest

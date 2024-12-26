@@ -1,0 +1,25 @@
+executionFrameworkSpec:
+  name: 'standalone'
+  segmentGenerationJobRunnerClassName: 'org.apache.pinot.plugin.ingestion.batch.standalone.SegmentGenerationJobRunner'
+  segmentTarPushJobRunnerClassName: 'org.apache.pinot.plugin.ingestion.batch.standalone.SegmentTarPushJobRunner'
+  segmentUriPushJobRunnerClassName: 'org.apache.pinot.plugin.ingestion.batch.standalone.SegmentUriPushJobRunner'
+jobType: SegmentCreationAndTarPush
+inputDirURI: '/tmp/raw_data/tracks/'
+includeFileNamePattern: 'glob:**/*.csv'
+outputDirURI: '/tmp/segments/'
+overwriteOutput: true
+pinotFSSpecs:
+  - scheme: file
+    className: org.apache.pinot.spi.filesystem.LocalPinotFS
+recordReaderSpec:
+  dataFormat: 'csv'
+  className: 'org.apache.pinot.plugin.inputformat.csv.CSVRecordReader'
+  configClassName: 'org.apache.pinot.plugin.inputformat.csv.CSVRecordReaderConfig'
+  configs:
+    delimiter: ';'
+tableSpec:
+  tableName: 'tracks'
+  schemaURI: 'http://localhost:9001/tables/tracks/schema'
+  tableConfigURI: 'http://localhost:9001/tables/tracks'
+pinotClusterSpecs:
+  - controllerURI: 'http://localhost:9001'
